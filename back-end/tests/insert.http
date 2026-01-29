@@ -1,0 +1,9 @@
+POST http://localhost:8080/insert
+Content-Type: application/json
+
+{
+    "name": "O Codigo Da Vinci",
+    "author": "Dan Brown",
+    "price": "45.90"
+}
+

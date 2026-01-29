@@ -1,0 +1,10 @@
+PATCH  http://localhost:8080/update
+Content-Type: application/json
+
+{
+    "id": "52",
+    "newName": "O Codigo Da Vinci",
+    "newAuthor": "Dan Brown",
+    "newPrice": "29.99"
+}
+
