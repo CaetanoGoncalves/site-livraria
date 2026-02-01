@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/microcosm-cc/bluemonday"
 )
 
 func Insert(w http.ResponseWriter, r *http.Request) {
@@ -14,10 +16,15 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erro ao ler JSON. Verifique a formatação.", http.StatusBadRequest)
 		return
 	}
+	p := bluemonday.StrictPolicy()
+	book.Name = p.Sanitize(book.Name)
+	book.Author = p.Sanitize(book.Author)
+	book.Price = p.Sanitize(book.Price)
 	if book.Name == "" || book.Author == "" || book.Price == "" {
 		http.Error(w, "Campos 'name', 'author' e 'price' são obrigatórios.", http.StatusBadRequest)
 		return
 	}
+
 	queryInsert := `INSERT INTO books (name, author, price) VALUES($1, $2, $3) RETURNING id`
 	db := DB
 	var novoID int

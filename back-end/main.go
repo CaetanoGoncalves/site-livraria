@@ -12,6 +12,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
 func startHandlers() {
 	http.HandleFunc("/", dashBoardHandler)
 	http.HandleFunc("POST /insert", handlers.Insert)
@@ -38,7 +51,7 @@ func main() {
 	handlers.DB = db
 	startHandlers()
 	fmt.Println("Servidor rodando em " + os.Getenv("BASE_LINK"))
-	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	http.ListenAndServe(":"+os.Getenv("PORT"), enableCORS(http.DefaultServeMux))
 }
 func dashBoardHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, os.Getenv("DASHBOARD_URL"), http.StatusFound)
