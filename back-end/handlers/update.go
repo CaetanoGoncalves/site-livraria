@@ -3,6 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/microcosm-cc/bluemonday"
 )
 
 func Update(w http.ResponseWriter, r *http.Request) {
@@ -16,6 +18,11 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Campos 'ID' é obrigatórios.", http.StatusBadRequest)
 		return
 	}
+	p := bluemonday.StrictPolicy()
+	book.ID = p.Sanitize(book.ID)
+	book.NewName = p.Sanitize(book.NewAuthor)
+	book.NewAuthor = p.Sanitize(book.NewAuthor)
+	book.NewPrice = p.Sanitize(book.NewPrice)
 	queryUpdate := `
 	UPDATE books 
 	SET name = $2, author = $3, price = $4
